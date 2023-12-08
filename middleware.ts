@@ -13,7 +13,7 @@ export default withAuth(
             redirect('/home');
           }
           return true;
-        } else if(req.nextUrl.pathname.startsWith('/api') || req.nextUrl.pathname.startsWith('/') || req.nextUrl.pathname.startsWith('/auth/login')) {
+        } else if(!req.nextUrl.pathname.startsWith('/api') || req.nextUrl.pathname.startsWith('/') || req.nextUrl.pathname.startsWith('/auth/login')) {
           return true
         }
         return false;

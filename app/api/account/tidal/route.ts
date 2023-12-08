@@ -1,63 +1,62 @@
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "../../[...nextauth]/route"
 import prisma from "@/app/utils/db";
 import SpotifyService from "@/app/utils/SpotifyClient";
 import SpotifyClient from "@/app/utils/SpotifyClient";
+import { authOptions } from "../../auth/[...nextauth]/route";
 async function GET() {
   const session = await getServerSession(authOptions);
-  console.log(session);
+  console.log(session)
   if (!session) {
-    return new Response('You Are Not Logged In.', {
+    return new Response(JSON.stringify({
+      message: "You are not logged in."
+    }), {
       status: 403,
     })
   } else {
       const result = await prisma.userStreamingServiceAccount.findFirst({
         where: {
           userId : session.user.id,
-          streamingService: "SPOTIFY"
+          streamingService: "TIDAL"
         },
         select: {
           accountName: true
         }
       });
-      // console.log(result)
-      return Response.json(result);
+      return Response.json(result ?? {accountName: ''});
   } 
 }
 
 async function POST(request: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return new Response('You Are Not Logged In.', {
-      status: 403,
-    })
-  } else {
     const body = await request.json();
-    const checkAccountName = await SpotifyClient.checkUserExists(body.accountName);
+    const checkAccountName = true;
     if (checkAccountName) {
-      const spotifyStreamingAccount = await prisma.userStreamingServiceAccount.upsert({
+      const tidalStreamingAccount = await prisma.userStreamingServiceAccount.upsert({
         where: {
-          id: session.user.id,
-          streamingService: "SPOTIFY",
+          user_id_account : {
+            userId: body.userId,
+            streamingService: "TIDAL",
+          }
         }, 
         update: {
           accountName: body.accountName,
+          accountPassword: body.password
         },
         create: {
           accountName: body.accountName,
-          streamingService: "SPOTIFY",
-          accountPassword: '',
-          userId: session.user.id,
+          streamingService: "TIDAL",
+          accountPassword: body.password,
+          userId: body.userId,
         }
       })
-      return Response.json(spotifyStreamingAccount);
+      return Response.json(tidalStreamingAccount);
     }
     else {
-      return new Response('The account doesn\'t exist.', {
+      return new Response(JSON.stringify({
+        message: "The account doesn't exist."
+      }), {
         status: 400
       });
     }
   }
-}
 
 export {POST, GET}

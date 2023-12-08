@@ -1,8 +1,9 @@
+import { getServerSession } from "next-auth";
 import { headers } from "next/headers"
-import { json } from "stream/consumers";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
-export default class SpotifyService {
-  static async getInsertedSpotifyUsername() {
+  export async function getInsertedSpotifyUsername() {
+    "use server";
     const response = await fetch(`${process.env.NEXTAUTH_URL}/api/account/spotify`, {
       cache: "no-cache",
       headers: headers()
@@ -12,15 +13,23 @@ export default class SpotifyService {
     return responseJson.accountName;
   }
 
-  static async insertUsername(formData: FormData) {
+  export async function insertSpotifyAccount(prevState:any,formData: FormData) {
+    "use server";
     const accountName = formData.get('accountName');
+    const session = await getServerSession(authOptions);
     const response = await fetch(`${process.env.NEXTAUTH_URL}/api/account/spotify`, {
       cache: "no-cache",
-      headers: headers(),
+      headers: {
+        'Content-Type': 'application/json',
+      },
       method: "POST",
       body: JSON.stringify({
         accountName: accountName,
+        userId: session!.user.id
       })
     });
+    if (response.ok) {
+      return 'Account Inserted!'
+    } 
+    return 'An error has occured.' 
   }
-}

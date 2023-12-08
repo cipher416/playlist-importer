@@ -46,6 +46,7 @@ model UserStreamingServiceAccount {
   streamingService StreamingService 
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([userId, streamingService], name: "user_id_account")
 }
 
 enum StreamingService {

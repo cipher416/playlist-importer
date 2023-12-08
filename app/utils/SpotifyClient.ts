@@ -20,14 +20,20 @@ export default class SpotifyClient {
 
   static async checkUserExists(username: string)  {
     const token = await this.logIn();
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SPOTIFY_API_URL}/users/${username}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      cache: "no-cache"
-    });
-    const responseJson = await response.json();
-    return responseJson.display_name;
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SPOTIFY_API_URL}/users/${username}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        cache: "no-cache"
+      });
+      if (!response.ok) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
 }

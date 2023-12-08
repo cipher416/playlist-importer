@@ -5,6 +5,7 @@ import NextSessionProvider from '@/app/_providers/NextSessionProvider'
 import { getServerSession } from 'next-auth'
 import { authOptions } from './api/auth/[...nextauth]/route'
 import NextThemeProvider from './_providers/NextThemeProvider'
+import ToastProvider from './_providers/ToastProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,9 +24,11 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning >
       <body className={inter.className}>
         <NextThemeProvider>
-          <NextSessionProvider session={session}>
-            {children}
-          </NextSessionProvider>
+          <ToastProvider>
+            <NextSessionProvider session={session}>
+              {children}
+            </NextSessionProvider>
+          </ToastProvider>
         </NextThemeProvider>
       </body>
     </html>

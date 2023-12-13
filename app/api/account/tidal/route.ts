@@ -1,8 +1,7 @@
 import { getServerSession } from "next-auth/next"
 import prisma from "@/app/utils/db";
-import SpotifyService from "@/app/utils/SpotifyClient";
-import SpotifyClient from "@/app/utils/SpotifyClient";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import TidalClient from "@/app/utils/TidalClient";
 async function GET() {
   const session = await getServerSession(authOptions);
   console.log(session)
@@ -27,36 +26,38 @@ async function GET() {
 }
 
 async function POST(request: Request) {
-    const body = await request.json();
-    const checkAccountName = true;
-    if (checkAccountName) {
-      const tidalStreamingAccount = await prisma.userStreamingServiceAccount.upsert({
-        where: {
-          user_id_account : {
-            userId: body.userId,
-            streamingService: "TIDAL",
-          }
-        }, 
-        update: {
-          accountName: body.accountName,
-          accountPassword: body.password
-        },
-        create: {
-          accountName: body.accountName,
-          streamingService: "TIDAL",
-          accountPassword: body.password,
-          userId: body.userId,
-        }
-      })
-      return Response.json(tidalStreamingAccount);
-    }
-    else {
-      return new Response(JSON.stringify({
-        message: "The account doesn't exist."
-      }), {
-        status: 400
-      });
-    }
+    // const body = await request.json();
+    // const checkAccountName = true;
+    // if (checkAccountName) {
+    //   const tidalStreamingAccount = await prisma.userStreamingServiceAccount.upsert({
+    //     where: {
+    //       user_id_account : {
+    //         userId: body.userId,
+    //         streamingService: "TIDAL",
+    //       }
+    //     }, 
+    //     update: {
+    //       accountName: body.accountName,
+    //       accountPassword: body.password
+    //     },
+    //     create: {
+    //       accountName: body.accountName,
+    //       streamingService: "TIDAL",
+    //       accountPassword: body.password,
+    //       userId: body.userId,
+    //     }
+    //   })
+    //   return Response.json(tidalStreamingAccount);
+    // }
+    // else {
+    //   return new Response(JSON.stringify({
+    //     message: "The account doesn't exist."
+    //   }), {
+    //     status: 400
+    //   });
+    // }
+    const response = TidalClient.logIn('test', 'test');
+    return response;
   }
 
 export {POST, GET}

@@ -13,6 +13,16 @@ import { authOptions } from "../api/auth/[...nextauth]/route";
     return responseJson.accountName;
   }
 
+  export async function getInsertedPlaylists(): Promise<Object[]> {
+    "use server";
+    const response = await fetch(`${process.env.NEXTAUTH_URL}/api/playlist/spotify`, {
+      headers: headers()
+    });
+    const responseJson = await response.json();
+    console.log(responseJson);
+    return responseJson;
+  }
+
   export async function insertSpotifyAccount(prevState:any,formData: FormData) {
     "use server";
     const accountName = formData.get('accountName');

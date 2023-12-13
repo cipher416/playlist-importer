@@ -1,33 +1,35 @@
 import { getServerSession } from "next-auth/next"
 import prisma from "@/app/utils/db";
-import SpotifyService from "@/app/utils/SpotifyClient";
-import SpotifyClient from "@/app/utils/SpotifyClient";
 import { authOptions } from "../../auth/[...nextauth]/route";
-async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return new Response(JSON.stringify({
-      message: "You are not logged in."
-    }), {
-      status: 403,
-    })
-  } else {
-      const result = await prisma.userStreamingServiceAccount.findFirst({
-        where: {
-          userId : session.user.id,
-          streamingService: "SPOTIFY"
-        },
-        select: {
-          accountName: true
-        }
-      });
-      return Response.json(result ?? {accountName: ''});
-  } 
-}
+import { checkUserExists } from "@/app/utils/SpotifyClient";
+import { NextRequest } from "next/server";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+
+
+// async function GET(req: NextRequest) {
+//   const queryParams = req.url;
+//   console.log(req.nextUrl);
+//   console.log();
+//   return
+//   const token = queryParams.get('access_token') ?? '';
+//   const session = await getServerSession(authOptions);
+//   if (!session) {
+//     return new Response(JSON.stringify({
+//       message: "You are not logged in."
+//     }), {
+//       status: 403,
+//     })
+//   } else {
+//       cookies().set('spotify-access-token', token);
+//       cookies().set('spotify-token-creation-time', (new Date()).toISOString());
+//       redirect('/home');
+//   } 
+// }
 
 async function POST(request: Request) {
     const body = await request.json();
-    const checkAccountName = await SpotifyClient.checkUserExists(body.accountName);
+    const checkAccountName = await checkUserExists(body.accountName);
     console.log(checkAccountName);
     if (checkAccountName) {
       const spotifyStreamingAccount = await prisma.userStreamingServiceAccount.upsert({
@@ -58,4 +60,4 @@ async function POST(request: Request) {
     }
   }
 
-export {POST, GET}
+export {POST}

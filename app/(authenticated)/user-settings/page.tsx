@@ -5,15 +5,21 @@ import ThemedIcon from "@/app/_components/ThemedIcon";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getInsertedSpotifyUsername, insertSpotifyAccount } from "@/app/_actions/SpotifyActions";
-import { useFormState } from "react-dom";
+import { getInsertedSpotifyUsername } from "@/app/_actions/SpotifyActions";
 import AccountFormContent from "@/app/_components/AccountFormContent";
 import SubmitButton from "@/app/_components/SubmitButton";
 import { getInsertedTidalUsername, insertTidalAccount } from "@/app/_actions/TidalActions";
 
+const searchParams = new URLSearchParams({
+  "response_type": encodeURIComponent("token"),
+  client_id : encodeURIComponent(process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID ?? ''),
+  scope: encodeURIComponent("playlist-read-private"),
+  redirect_uri: 'http://localhost:3000/spotify-callback'
+}).toString();
+
 export default async function UserSettings() {
   const session = await getServerSession(authOptions);
-  const spotifyAccountName = await getInsertedSpotifyUsername();
+  // const spotifyAccountName = await getInsertedSpotifyUsername();
   const tidalAccountName = await getInsertedTidalUsername();
   return (
       <div className="px-4 mx-2 flex flex-col items-center justify-self-center">
@@ -28,12 +34,12 @@ export default async function UserSettings() {
         <div className="py-6 flex flex-col space-y-3">
           <Modal text={'Log In Spotify Account'} icon={<Image src={'/spotify-2.svg'} alt="spotify icon" width={30} height={30}/>}>
             <div className="flex flex-col space-y-4">
-                <AccountFormContent defaultValue={spotifyAccountName} action={insertSpotifyAccount}>
+                <a href={`https://accounts.spotify.com/authorize?${searchParams}`}>
                 <SubmitButton className="btn w-full">
                   <Image src={'/spotify-2.svg'} alt="streaming service icon" width={30} height={30}/>
                       Login
                 </SubmitButton> 
-                </AccountFormContent>
+                </a>
             </div>
           </Modal>
           <Modal text={'Log In Tidal Account'} icon={<ThemedIcon src={'/tidal.svg'}/>}>

@@ -35,7 +35,7 @@ export default async function RootLayout({
           </div>
           <div className="h-full flex flex-col items-center">
             <Suspense fallback={<Loading />}>
-              <div className="h-full flex flex-row items-center">
+              <div className="h-full flex flex-row items-center w-full justify-center">
                 {children}
               </div>
             </Suspense>

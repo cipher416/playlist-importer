@@ -1,6 +1,5 @@
-export default class SpotifyClient {
-  static token: string;
-  static async logIn(): Promise<string> {
+
+  export async function logIn(): Promise<string> {
     const response = await fetch(`${process.env.NEXT_PUBLIC_SPOTIFY_API_TOKEN_URL ?? ''}`
     , {
       cache: "no-cache",
@@ -18,8 +17,8 @@ export default class SpotifyClient {
     return responseJson.access_token;
   }
 
-  static async checkUserExists(username: string)  {
-    const token = await this.logIn();
+  export async function checkUserExists(username: string)  {
+    const token = await logIn();
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_SPOTIFY_API_URL}/users/${username}`, {
         headers: {
@@ -36,4 +35,16 @@ export default class SpotifyClient {
     }
   }
 
-}
+  export async function getAllSpotifyPlaylists(username:string) {
+    const token = await logIn();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SPOTIFY_API_URL}/users/${username}/playlists`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      cache: "no-cache"
+    });
+    const responseJson = await response.json();
+    console.log(responseJson);
+    return responseJson;
+  }
+

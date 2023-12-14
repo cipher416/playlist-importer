@@ -2,8 +2,9 @@ import { getServerSession } from "next-auth/next"
 import prisma from "@/app/utils/db";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { checkUserExists, getAllSpotifyPlaylists } from "@/app/utils/SpotifyClient";
-async function GET() {
+async function POST(req: Request) {
   const session = await getServerSession(authOptions);
+  const body = await req.json();
   if (!session) {
     return new Response(JSON.stringify({
       message: "You are not logged in."
@@ -11,18 +12,9 @@ async function GET() {
       status: 403,
     })
   } else {
-      const result = await prisma.userStreamingServiceAccount.findFirst({
-        where: {
-          userId : session.user.id,
-          streamingService: "SPOTIFY"
-        },
-        select: {
-          accountName: true
-        }
-      });
-      const playlists = await getAllSpotifyPlaylists(result!.accountName);
+      const playlists = await getAllSpotifyPlaylists(body.spotify_token);
       return Response.json(playlists);
   }  
 }
 
-export {GET};
+export {POST};

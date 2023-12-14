@@ -35,16 +35,15 @@
     }
   }
 
-  export async function getAllSpotifyPlaylists(username:string) {
-    const token = await logIn();
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SPOTIFY_API_URL}/users/${username}/playlists`, {
+  export async function getAllSpotifyPlaylists(token: string) {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SPOTIFY_API_URL}/me/playlists`, {
       headers: {
         Authorization: `Bearer ${token}`
       },
       cache: "no-cache"
     });
     const responseJson = await response.json();
-    console.log(responseJson);
+    console.log(responseJson[0]);
     return responseJson;
   }
 

@@ -36,6 +36,7 @@
   }
 
   export async function getAllSpotifyPlaylists(token: string) {
+    console.log(token)
     const response = await fetch(`${process.env.NEXT_PUBLIC_SPOTIFY_API_URL}/me/playlists`, {
       headers: {
         Authorization: `Bearer ${token}`
@@ -43,7 +44,7 @@
       cache: "no-cache"
     });
     const responseJson = await response.json();
-    console.log(responseJson[0]);
+    console.log(responseJson);
     return responseJson;
   }
 

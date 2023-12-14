@@ -11,10 +11,10 @@ import SubmitButton from "@/app/_components/SubmitButton";
 import { getInsertedTidalUsername, insertTidalAccount } from "@/app/_actions/TidalActions";
 
 const searchParams = new URLSearchParams({
-  "response_type": encodeURIComponent("token"),
+  "response_type": encodeURIComponent("code"),
   client_id : encodeURIComponent(process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID ?? ''),
   scope: encodeURIComponent("playlist-read-private"),
-  redirect_uri: 'http://localhost:3000/spotify-callback'
+  redirect_uri: 'http://localhost:3000/api/account/spotify'
 }).toString();
 
 export default async function UserSettings() {

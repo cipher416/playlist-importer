@@ -5,6 +5,7 @@ import Image from "next/image";
 import Loading from "./loading";
 import { Suspense } from "react";
 import ThemeChanger from "../_components/ThemeChanger";
+import { cookies } from "next/headers";
 
 export default async function RootLayout({
   children,

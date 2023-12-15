@@ -9,7 +9,7 @@ type CardProps = {
 export default function Card({image, text, subtext}: CardProps) {
   return (
     <>
-      <div className="card card-side shadow-xl w-full m-5 bg-base-300">
+      <div className="card card-side shadow-xl w-full bg-base-300">
         <figure><Image width={100} height={100} src={image} alt="Movie"/></figure>
         <div className="card-body">
           <h2 className="card-title">{text}</h2>

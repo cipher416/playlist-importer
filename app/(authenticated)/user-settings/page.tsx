@@ -19,7 +19,6 @@ const searchParams = new URLSearchParams({
 
 export default async function UserSettings() {
   const session = await getServerSession(authOptions);
-  // const spotifyAccountName = await getInsertedSpotifyUsername();
   const tidalAccountName = await getInsertedTidalUsername();
   return (
       <div className="px-4 mx-2 flex flex-col items-center justify-self-center">

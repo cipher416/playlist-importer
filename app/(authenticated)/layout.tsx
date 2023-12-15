@@ -6,6 +6,8 @@ import Loading from "./loading";
 import { Suspense } from "react";
 import ThemeChanger from "../_components/ThemeChanger";
 import { cookies } from "next/headers";
+import { getNewSpotifyAccessToken } from "../_actions/SpotifyActions";
+import SpotifyClient from "../utils/SpotifyClient";
 
 export default async function RootLayout({
   children,
@@ -14,10 +16,10 @@ export default async function RootLayout({
 }) {
   
   const session = await getServerSession(authOptions);
+  await SpotifyClient.refresh();
   if (!session) {
     redirect('/auth/login');
   }
-
   return (
       <div className="drawer min-h-screen">
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" /> 

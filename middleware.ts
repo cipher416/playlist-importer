@@ -1,11 +1,13 @@
 import { getServerSession } from "next-auth"
-import { withAuth } from "next-auth/middleware"
+import { NextRequestWithAuth, withAuth } from "next-auth/middleware"
 import { redirect } from "next/navigation"
 import { rule } from "postcss"
 import { authOptions } from "./app/api/auth/[...nextauth]/route"
+import { getNewSpotifyAccessToken } from "./app/_actions/SpotifyActions"
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server"
+import SpotifyClient from "./app/utils/SpotifyClient"
 
-export default withAuth(
-  {
+export default withAuth({
     callbacks: {
       authorized: async ({ token, req }) => {
         if (!!token) {
@@ -21,6 +23,6 @@ export default withAuth(
     },
     pages: {
       signIn: 'auth/login'
-    }
+    },
   }
 )

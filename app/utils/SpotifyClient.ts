@@ -1,50 +1,39 @@
+import { cookies } from "next/headers";
 
-  export async function logIn(): Promise<string> {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SPOTIFY_API_TOKEN_URL ?? ''}`
-    , {
-      cache: "no-cache",
-      method: "POST",
-      body : new URLSearchParams({
-          "grant_type": "client_credentials",
-          client_id : process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID ?? '',
-          client_secret : process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET ?? '',
-      }),
-      headers : {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    });
-    const responseJson = await response.json();
-    return responseJson.access_token;
-  }
+export default class SpotifyClient {
 
-  export async function checkUserExists(username: string)  {
-    const token = await logIn();
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SPOTIFY_API_URL}/users/${username}`, {
+  static token: string;
+
+  static async refresh(){
+    const basicAuthToken: string = (Buffer.from(process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID + ':' + process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET)).toString('base64')
+      const urlFormBody = new URLSearchParams({
+        refresh_token : cookies().get('spotify-refresh-token')?.value ?? '',
+        client_id: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID ?? '',
+        grant_type: 'refresh_token'
+      });
+      const tokenResult = await fetch('https://accounts.spotify.com/api/token', {
+        method: "POST",
+        body: urlFormBody,
         headers: {
-          Authorization: `Bearer ${token}`
+          'content-type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Basic '+ basicAuthToken,
         },
         cache: "no-cache"
       });
-      if (!response.ok) {
-        return false;
-      }
-      return true;
-    } catch (error) {
-      return false;
-    }
+      const tokenResultBody = await tokenResult.json();
+      this.token = tokenResultBody.access_token;
   }
 
-  export async function getAllSpotifyPlaylists(token: string) {
-    console.log(token)
+
+  static async getAllSpotifyPlaylists() {
     const response = await fetch(`${process.env.NEXT_PUBLIC_SPOTIFY_API_URL}/me/playlists`, {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${this.token}`
       },
       cache: "no-cache"
     });
     const responseJson = await response.json();
-    console.log(responseJson);
     return responseJson;
   }
+}
 
